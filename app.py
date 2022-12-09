@@ -1,6 +1,8 @@
 import requests
+import platform
 from flask import Flask, request
-
+import psutil
+import os
 
 app = Flask(__name__)
 
@@ -37,10 +39,27 @@ def controller_poke(headers):
         return {'exists_ability_name':False}, 200
         
 
+def controller_status():
+
+    memory = psutil.virtual_memory().total / (1024.0 ** 3)
+    
+    return {'system':platform.system() , 'RAM memory:': f'{round(memory)} GB'}, 200
+
+
+    
+
 @app.route('/poke')
 def poke():
     response = controller_poke(request.headers)
     return response
+
+@app.route('/status')
+def status():
+    response = controller_status()
+    return response
+
+
+
 
 if __name__ == "__main__":
     app.run(host='127.0.0.1', port=9000, debug=True)
